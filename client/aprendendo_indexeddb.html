@@ -52,6 +52,33 @@
           console.log("Não foi possível cadastrar a negociação.");
         };
       }
+
+      function listaTodos() {
+        let transaction = connection.transaction(["negociacoes"], "readwrite");
+        let store = transaction.objectStore("negociacoes");
+        let cursor = store.openCursor(); //cria o ponteiro para as negociações
+        let negociacoes = [];
+
+        cursor.onsuccess = e => {
+          let atual = e.target.result; // é um PONTEIRO
+
+          // Se existe negociações para serem lidas
+          if (atual) {
+            let dado = atual.value; // é um json
+            negociacoes.push(
+              new Negociacao(dado._data, dado._quantidade, dado._valor)
+            );
+
+            atual.continue(); // ponteiro aponta para próxima negociação
+          } else {
+            console.log(negociacoes);
+          }
+        };
+
+        cursor.onerror = e => {
+          console.log(e.target.error.name);
+        };
+      }
     </script>
   </body>
 </html>
