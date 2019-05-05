@@ -12,7 +12,7 @@ A aplicação por enquanto, lista negociações vindas do banco, adiciona negoci
 * Navegue até a pasta **server/**, e siga os passos abaixo:
   * Se você usar **Yarn**, no terminal, execute o seguinte comando:
 		`yarn start`
-	* Se você usar **npm**, no terminal, execute o seguinte comando:
+  * Se você usar **npm**, no terminal, execute o seguinte comando:
 		`npm start`
 * A aplicação começará a rodar na porta 3000.
 
