@@ -1,10 +1,12 @@
 /* Module Pattern, IIFE */
 var ConnectionFactory = (function() {
-  var stores = ["negociacoes"];
-  var version = 4;
-  var dbName = "cursojs";
+  const stores = ["negociacoes"];
+  const version = 4;
+  const dbName = "cursojs";
 
   var connection = null;
+
+  var close = null;
 
   return class ConnectionFactory {
     constructor() {
@@ -20,7 +22,17 @@ var ConnectionFactory = (function() {
         };
 
         openRequest.onsuccess = e => {
-          if (!connection) connection = e.target.result;
+          if (!connection) {
+            connection = e.target.result;
+
+            /* associa this ao connection, e não ao close */
+            close = connection.close.bind(connection);
+
+            connection.close = function() {
+              throw new Error("Você não pode fechar essa conexão diretamente.");
+            };
+          }
+
           resolve(connection);
         };
 
@@ -37,6 +49,13 @@ var ConnectionFactory = (function() {
           connection.deleteObjectStore(store);
       });
       connection.createObjectStore(stores, { autoIncrement: true });
+    }
+
+    static _closeConnection() {
+      if (connection) {
+        close();
+        connection = null;
+      }
     }
   };
 })();
