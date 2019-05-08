@@ -25,6 +25,19 @@ class NegociacaoController {
       new MensagemView($("#mensagemView")),
       "texto"
     );
+
+    ConnectionFactory.getConnection()
+      .then(connection => new NegociacaoDao(connection))
+      .then(dao => dao.listaTodos())
+      .then(negociacoes =>
+        negociacoes.forEach(negociacao =>
+          this._listaNegociacoes.adiciona(negociacao)
+        )
+      )
+      .catch(error => {
+        console.log(error);
+        this._mensagem.texto = error;
+      });
   }
 
   ordena(coluna) {
@@ -38,15 +51,18 @@ class NegociacaoController {
 
   adiciona(event) {
     event.preventDefault();
-    try {
-      this._listaNegociacoes.adiciona(this._criaNegociacao());
 
-      this._mensagem.texto = "Negociação adicionada com sucesso";
+    ConnectionFactory.getConnection()
+      .then(connection => {
+        let negociacao = this._criaNegociacao();
 
-      this._limpaFormulario();
-    } catch (error) {
-      this._mensagem.texto = error;
-    }
+        new NegociacaoDao(connection).adiciona(negociacao).then(() => {
+          this._listaNegociacoes.adiciona(negociacao);
+          this._mensagem.texto = "Negociação adicionada com sucesso";
+          this._limpaFormulario();
+        });
+      })
+      .catch(error => (this._mensagem.texto = error));
   }
 
   importaNegociacoes() {
@@ -138,16 +154,21 @@ class NegociacaoController {
   }
 
   apaga() {
-    this._listaNegociacoes.esvazia();
-
-    this._mensagem.texto = "Negociação excluída com sucesso";
+    ConnectionFactory.getConnection()
+      .then(connection => new NegociacaoDao(connection))
+      .then(dao => dao.apagaTodos())
+      .then(mensagem => {
+        this._mensagem.texto = mensagem;
+        this._listaNegociacoes.esvazia();
+      })
+      .catch(error => console.log(error));
   }
 
   _criaNegociacao() {
     return new Negociacao(
       DateHelper.textoParaData(this._inputData.value),
-      this._inputQuantidade.value,
-      this._inputValor.value
+      parseInt(this._inputQuantidade.value),
+      parseFloat(this._inputValor.value)
     );
   }
 
