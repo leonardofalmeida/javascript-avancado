@@ -4,16 +4,24 @@ class NegociacaoService {
   }
 
   obterNegociacoes() {
-    let service = new NegociacaoService();
-    service
-      .obterNegociacoes()
-      .then(negociacoes => {
-        negociacoes.forEach(negociacao =>
-          this._listaNegociacoes.adiciona(negociacao)
-        );
-        this._mensagem.texto = "Negociações do período importadas com sucesso";
+    return Promise.all([
+      this.obterNegociacoesSemana(),
+      this.obterNegociacoesSemanaAnterior(),
+      this.obterNegociacoesSemanaRetrasada()
+    ])
+      .then(periodos => {
+        let negociacoes = periodos
+          .reduce((dados, periodo) => dados.concat(periodo), [])
+          .map(
+            dado =>
+              new Negociacao(new Date(dado.data), dado.quantidade, dado.valor)
+          );
+
+        return negociacoes;
       })
-      .catch(error => (this._mensagem.texto = error));
+      .catch(erro => {
+        throw new Error(erro);
+      });
   }
 
   obterNegociacoesSemana() {
