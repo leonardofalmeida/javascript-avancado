@@ -4,7 +4,8 @@
   "main": "index.js",
   "license": "MIT",
   "scripts": {
-    "build": "babel js/app-es6 -d js/app --source-maps"
+    "build": "babel js/app-es6 -d js/app --source-maps",
+    "watch": "babel js/app-es6 -d js/app --source-maps --watch"
   },
   "devDependencies": {
     "babel-cli": "6.10.1",
