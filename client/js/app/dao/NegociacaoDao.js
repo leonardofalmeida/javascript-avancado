@@ -1,74 +1,85 @@
-class NegociacaoDao {
-  constructor(connection) {
+"use strict";
+
+var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+var NegociacaoDao = function () {
+  function NegociacaoDao(connection) {
+    _classCallCheck(this, NegociacaoDao);
+
     this._connection = connection;
     this._store = "negociacoes";
   }
 
-  adiciona(negociacao) {
-    return new Promise((resolve, reject) => {
-      let request = this._connection
-        .transaction([this._store], "readwrite")
-        .objectStore(this._store) // obtém o object store
+  _createClass(NegociacaoDao, [{
+    key: "adiciona",
+    value: function adiciona(negociacao) {
+      var _this = this;
+
+      return new Promise(function (resolve, reject) {
+        var request = _this._connection.transaction([_this._store], "readwrite").objectStore(_this._store) // obtém o object store
         .add(negociacao); // manda a requisição
 
-      request.onsuccess = e => {
-        resolve();
-      };
+        request.onsuccess = function (e) {
+          resolve();
+        };
 
-      request.onerror = e => {
-        console.log(e.target.error);
-        reject("Nao foi possível adicionar.");
-      };
-    });
-  }
+        request.onerror = function (e) {
+          console.log(e.target.error);
+          reject("Nao foi possível adicionar.");
+        };
+      });
+    }
+  }, {
+    key: "listaTodos",
+    value: function listaTodos() {
+      var _this2 = this;
 
-  listaTodos() {
-    return new Promise((resolve, reject) => {
-      let response = this._connection
-        .transaction([this._store], "readwrite")
-        .objectStore(this._store)
-        .openCursor(); //cria o ponteiro para as negociações
+      return new Promise(function (resolve, reject) {
+        var response = _this2._connection.transaction([_this2._store], "readwrite").objectStore(_this2._store).openCursor(); //cria o ponteiro para as negociações
 
-      let negociacoes = [];
+        var negociacoes = [];
 
-      response.onsuccess = e => {
-        let atual = e.target.result; // é um PONTEIRO
+        response.onsuccess = function (e) {
+          var atual = e.target.result; // é um PONTEIRO
 
-        // Se existe negociações para serem lidas
-        if (atual) {
-          let dado = atual.value; // é um json
-          negociacoes.push(
-            new Negociacao(dado._data, dado._quantidade, dado._valor)
-          );
+          // Se existe negociações para serem lidas
+          if (atual) {
+            var dado = atual.value; // é um json
+            negociacoes.push(new Negociacao(dado._data, dado._quantidade, dado._valor));
 
-          atual.continue(); // ponteiro aponta para próxima negociação
-        } else {
-          resolve(negociacoes);
-        }
-      };
+            atual.continue(); // ponteiro aponta para próxima negociação
+          } else {
+            resolve(negociacoes);
+          }
+        };
 
-      response.onerror = e => {
-        console.log(e.target.error.name);
-        reject("Não foi possível listar as negociações");
-      };
-    });
-  }
+        response.onerror = function (e) {
+          console.log(e.target.error.name);
+          reject("Não foi possível listar as negociações");
+        };
+      });
+    }
+  }, {
+    key: "apagaTodos",
+    value: function apagaTodos() {
+      var _this3 = this;
 
-  apagaTodos() {
-    return new Promise((resolve, reject) => {
-      let request = this._connection
-        .transaction([this._store], "readwrite")
-        .objectStore(this._store)
-        .clear(); //cria o ponteiro para as negociações
+      return new Promise(function (resolve, reject) {
+        var request = _this3._connection.transaction([_this3._store], "readwrite").objectStore(_this3._store).clear(); //cria o ponteiro para as negociações
 
-      request.onsuccess = e => {
-        resolve("Negociações removidas com sucesso.");
-      };
+        request.onsuccess = function (e) {
+          resolve("Negociações removidas com sucesso.");
+        };
 
-      request.onerror = e => {
-        console.log(e.target.error);
-        reject("Nao foi possível apagar as negociações.");
-      };
-    });
-  }
-}
+        request.onerror = function (e) {
+          console.log(e.target.error);
+          reject("Nao foi possível apagar as negociações.");
+        };
+      });
+    }
+  }]);
+
+  return NegociacaoDao;
+}();
