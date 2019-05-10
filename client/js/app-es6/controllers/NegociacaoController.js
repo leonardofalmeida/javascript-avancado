@@ -10,7 +10,7 @@ import { NegociacaoService } from "../services/NegociacaoService";
 import { DateHelper } from "../helpers/DateHelper";
 import { Bind } from "../helpers/Bind";
 
-export class NegociacaoController {
+class NegociacaoController {
   constructor() {
     // querys
     let $ = document.querySelector.bind(document);
@@ -122,4 +122,10 @@ export class NegociacaoController {
     this._inputValor.value = 0.0;
     this._inputData.focus();
   }
+}
+
+let negociacaoController = new NegociacaoController();
+
+export function currentInstance() {
+  return negociacaoController;
 }

@@ -1,11 +1,21 @@
-import { NegociacaoController } from "./controllers/NegociacaoController";
+"use strict";
 
-let negociacaoController = new NegociacaoController();
+System.register(["./controllers/NegociacaoController"], function (_export, _context) {
+  "use strict";
 
-document.querySelector(".form").onsubmit = negociacaoController.adiciona.bind(
-  negociacaoController
-);
+  var currentInstance, negociacaoController;
+  return {
+    setters: [function (_controllersNegociacaoController) {
+      currentInstance = _controllersNegociacaoController.currentInstance;
+    }],
+    execute: function () {
+      negociacaoController = currentInstance();
 
-document.querySelector(
-  "[type=button]"
-).onclick = negociacaoController.apaga.bind(negociacaoController);
+
+      document.querySelector(".form").onsubmit = negociacaoController.adiciona.bind(negociacaoController);
+
+      document.querySelector("[type=button]").onclick = negociacaoController.apaga.bind(negociacaoController);
+    }
+  };
+});
+//# sourceMappingURL=boot.js.map
